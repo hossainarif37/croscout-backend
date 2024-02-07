@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import passport from 'passport';
+import session from 'express-session';
 import { config as dotenvConfig } from 'dotenv';
 const authRoutes = require('./routes/auth.routes');
 
@@ -15,6 +16,15 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+
+// Configure express-session middleware
+app.use(session({
+    secret: process.env.JWT_SECRET_KEY || 'fallbackSecretKey', // Replace with your own secret key // Replace with your own secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if you are using HTTPS
+}));
 
 // app.use(cors({
 //     origin: process.env.CLIENT_URL ? [process.env.CLIENT_URL, "http://localhost:3000"] : "http://localhost:3000" || '*'
@@ -48,6 +58,10 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+//* server error
+import errorHandler from './errorHandlers/errorHandler';
+app.use(errorHandler);
 
 
 export default app;
