@@ -4,12 +4,13 @@ import passport from 'passport';
 import session from 'express-session';
 import { config as dotenvConfig } from 'dotenv';
 const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 
 // Load environment variables from .env file
 dotenvConfig();
 
+// Load Database and Passport configuration
 import "./config/database"
-// Load Passport configuration
 import "./config/passport"
 
 const app = express();
@@ -20,7 +21,7 @@ app.use(cors());
 
 // Configure express-session middleware
 app.use(session({
-    secret: process.env.JWT_SECRET_KEY || 'fallbackSecretKey', // Replace with your own secret key // Replace with your own secret key
+    secret: process.env.JWT_SECRET_KEY || 'fallbackSecretKey',
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Set to true if you are using HTTPS
@@ -41,7 +42,7 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-// app.use('/api/user', userRoutes);
+app.use('/api/user', userRoutes);
 
 // Route not found
 app.use((req, res, next) => {

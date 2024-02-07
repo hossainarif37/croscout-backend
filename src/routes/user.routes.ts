@@ -1,0 +1,25 @@
+
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/user.controller');
+import { checkAuth } from "../middleware/authentication";
+
+
+
+router
+    //* Get the current user's profile
+    //* Route
+    /**
+    * @route GET /current-user
+    * @description Get if authenticated.
+    * @access Private (Requires user authentication)
+    */
+    //* Middleware
+    /**
+     * @middleware isAuthenticateUser
+     * @description Check if the user is authenticated before allowing access to certain routes.
+     * @access Private
+     */
+    .get('/current-user', checkAuth, userController.getCurrentUser);
+
+module.exports = router;
