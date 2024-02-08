@@ -204,12 +204,12 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
         // Check if reset token is valid
         if (token !== user.resetPasswordToken) {
-            return res.status(400).json({ success: false, error: 'Invalid or expired token' });
+            return res.status(400).json({ success: false, error: 'Invalid or expired token. Resend again' });
         }
 
         // Check if token has expired
         if (user.resetPasswordExpires && new Date() > user.resetPasswordExpires) {
-            return res.status(400).json({ success: false, error: 'Token has expired' });
+            return res.status(400).json({ success: false, error: 'Token has expired. Resend again' });
         }
 
         // Hash the new password
