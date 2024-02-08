@@ -131,14 +131,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-export const forgotPassword = async (req: Request, res: Response) => {
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, clientUrl } = req.body;
 
         const user: UserDocument | null = await User.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ success: false, error: 'User not found' });
         }
 
         const secretKey = process.env.JWT_SECRET_KEY;
@@ -172,18 +172,18 @@ export const forgotPassword = async (req: Request, res: Response) => {
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error('Error sending email:', error);
-                return res.status(500).json({ message: 'Failed to send reset email' });
+                return res.status(500).json({ success: false, error: 'Failed to send reset email' });
             }
-            res.status(200).json({ message: 'Password reset email sent' });
+            res.status(200).json({ success: true, message: 'Password reset email sent' });
         });
     } catch (error) {
-        console.error('Error in forgotPassword:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.log("180 number line: ", error);
+        next(error);
     }
 };
 
 
-export const resetPassword = async (req: Request, res: Response) => {
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { token, newPassword } = req.body;
 
@@ -199,17 +199,17 @@ export const resetPassword = async (req: Request, res: Response) => {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ success: false, error: 'User not found' });
         }
 
         // Check if reset token is valid
         if (token !== user.resetPasswordToken) {
-            return res.status(400).json({ message: 'Invalid or expired token' });
+            return res.status(400).json({ success: false, error: 'Invalid or expired token' });
         }
 
         // Check if token has expired
         if (user.resetPasswordExpires && new Date() > user.resetPasswordExpires) {
-            return res.status(400).json({ message: 'Token has expired' });
+            return res.status(400).json({ success: false, error: 'Token has expired' });
         }
 
         // Hash the new password
@@ -221,9 +221,9 @@ export const resetPassword = async (req: Request, res: Response) => {
         user.resetPasswordExpires = undefined;
         await user.save();
 
-        res.status(200).json({ message: 'Password reset successful' });
+        res.status(200).json({ success: true, message: 'Password reset successful' });
     } catch (error) {
-        console.error('Error in resetPassword:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Line no 226 - Error in resetPassword: ', error);
+        next(error)
     }
 };
