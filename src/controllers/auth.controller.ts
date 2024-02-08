@@ -174,7 +174,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
                 console.error('Error sending email:', error);
                 return res.status(500).json({ success: false, error: 'Failed to send reset email' });
             }
-            res.status(200).json({ success: true, message: 'Password reset email sent' });
+            res.status(200).json({ success: true, message: 'Password reset link sent to your email.' });
         });
     } catch (error) {
         console.log("180 number line: ", error);
