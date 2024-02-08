@@ -18,6 +18,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// app.use(cors({
+//     origin: process.env.CLIENT_URL ? [process.env.CLIENT_URL, "http://localhost:3000"] : "http://localhost:3000" || '*'
+// }));
+
 
 // Configure express-session middleware
 app.use(session({
@@ -27,9 +31,6 @@ app.use(session({
     cookie: { secure: false } // Set to true if you are using HTTPS
 }));
 
-// app.use(cors({
-//     origin: process.env.CLIENT_URL ? [process.env.CLIENT_URL, "http://localhost:3000"] : "http://localhost:3000" || '*'
-// }));
 app.use(express.urlencoded({ extended: true }));
 
 // Passport and Session Initialize

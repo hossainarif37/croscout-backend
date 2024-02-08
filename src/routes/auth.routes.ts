@@ -41,9 +41,13 @@ router
      * @description Log out the current user
      * @access Private
     */
-    .get('/logout', authController.logOutUser);
+    .get('/logout', authController.logOutUser)
 
+    //* Forgot password route
+    .post('/forgot-password', authController.forgotPassword)
+
+    //* Reset password route
+    .post('/reset-password', authController.resetPassword)
 
 
 module.exports = router;
-
