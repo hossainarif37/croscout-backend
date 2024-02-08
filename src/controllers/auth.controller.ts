@@ -133,7 +133,7 @@ const transporter = nodemailer.createTransport({
 
 export const forgotPassword = async (req: Request, res: Response) => {
     try {
-        const { email } = req.body;
+        const { email, clientUrl } = req.body;
 
         const user: UserDocument | null = await User.findOne({ email });
 
@@ -165,7 +165,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
             subject: 'Password Reset',
             html: `You are receiving this because you have requested the reset of the password for your account.<br/>
             Please click on the following link, or paste this into your browser to complete the process:<br/>
-            <a href="http://${req.headers.host}/reset-password/${resetToken}">Click here to reset your password</a><br/>
+            <a href="${clientUrl}/reset-password/${resetToken}">Click here to reset your password</a><br/>
             If you did not request this, please ignore this email and your password will remain unchanged.`,
         };
 
