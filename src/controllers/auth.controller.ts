@@ -46,11 +46,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
                     //* Create a new Agent document linked to the new User
                     const newAgent = new Agent({
                         user: newUser._id,
-                        taxNumber: taxNumber,
-                        name,
-                        email,
-                        password: hash,
-                        role
+                        taxNumber: taxNumber
                     });
                     await newAgent.save();
                 }
