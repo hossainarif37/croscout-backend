@@ -57,6 +57,12 @@ export const updateProperty = async (req: Request, res: Response, next: NextFunc
     try {
         const { id } = req.params;
         const updateDocuments = req.body;
+
+        // Check if updateDocuments is empty
+        if (Object.keys(updateDocuments).length === 0) {
+            return res.status(400).json({ success: false, error: 'No update data provided' });
+        }
+
         const updatedProperty = await Property.findByIdAndUpdate(id, updateDocuments, { new: true });
         if (!updatedProperty) {
             return res.status(404).json({ success: false, error: 'Property not found' });
