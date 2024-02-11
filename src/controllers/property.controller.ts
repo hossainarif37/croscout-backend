@@ -5,9 +5,13 @@ import User from '../models/user.model';
 export const createProperty = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const property = new Property(req.body);
+        console.log(property);
         await property.save();
+
+
         res.status(201).json({ success: true, message: "Property Created Successfully" });
     } catch (error) {
+        console.log(error);
         next(error);
     }
 };

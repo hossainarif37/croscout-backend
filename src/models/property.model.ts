@@ -27,7 +27,7 @@ const PropertySchema: Schema = new Schema({
     bookedDates: [{ type: Date }],
     guests: { type: Number, required: true },
     propertyImages: [{ type: String, required: true }],
-    ratings: [{ type: Number, required: true }]
+    ratings: [{ type: Number }]
 });
 
 const Property = mongoose.model<IProperty>('Property', PropertySchema);
