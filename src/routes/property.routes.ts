@@ -1,5 +1,5 @@
 const express = require('express');
-import { createProperty, getProperties, getSingleProperty, getPropertiesByUser } from '../controllers/property.controller';
+import { createProperty, getProperties, getSingleProperty, getPropertiesByUser, updateProperty, deleteProperty } from '../controllers/property.controller';
 
 const router = express.Router();
 
@@ -16,5 +16,11 @@ router
 
     // Get Properties by User
     .get('/user/:email', getPropertiesByUser)
+
+    // Update Property by ID
+    .put('/:id', updateProperty)
+
+    // Delete Property by ID
+    .delete('/:id', deleteProperty)
 
 module.exports = router;

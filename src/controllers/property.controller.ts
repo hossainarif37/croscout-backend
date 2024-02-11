@@ -51,3 +51,32 @@ export const getPropertiesByUser = async (req: Request, res: Response, next: Nex
         next(error);
     }
 };
+
+// Update Property by ID
+export const updateProperty = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const updateDocuments = req.body;
+        const updatedProperty = await Property.findByIdAndUpdate(id, updateDocuments, { new: true });
+        if (!updatedProperty) {
+            return res.status(404).json({ success: false, error: 'Property not found' });
+        }
+        res.status(200).json({ success: true, message: 'Updated Successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Delete Property by ID
+export const deleteProperty = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const deletedProperty = await Property.findByIdAndDelete(id);
+        if (!deletedProperty) {
+            return res.status(404).json({ success: false, error: 'Property not found' });
+        }
+        res.status(200).json({ success: true, message: 'Property deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
