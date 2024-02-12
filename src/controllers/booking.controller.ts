@@ -108,6 +108,7 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
 };
 
 
+// Manage the booking
 export const manageBookings = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { bookingId } = req.params;
@@ -168,4 +169,25 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
         console.error(error);
         next(error);
     }
+};
+
+
+// Get All Bookings
+export const getAllBookings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const bookings: IBooking[] = await Booking.find().exec();
+        res.status(200).json({ success: true, bookings: bookings });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+export const getBookingById = async (req: Request, res: Response, next: NextFunction) => {
+    // Implementation for getting a booking by ID
+};
+
+
+export const deleteBooking = async (req: Request, res: Response, next: NextFunction) => {
+    // Implementation for deleting a booking
 };
