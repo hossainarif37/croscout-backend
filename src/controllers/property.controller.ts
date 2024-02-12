@@ -18,7 +18,20 @@ export const createProperty = async (req: Request, res: Response, next: NextFunc
 
 export const getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const properties = await Property.find({});
+        const filter: { location?: RegExp, guests?: { $gte: number }, propertyType?: RegExp } = {};
+        const location = req.query.location;
+        const guest = req.query.guest;
+        const category = req.query.category;
+        if (typeof location === "string") {
+            filter.location = new RegExp(location, 'i');
+        }
+        if (typeof guest === "string") {
+            filter.guests = { $gte: parseInt(guest, 10) };
+        }
+        if (typeof category === "string") {
+            filter.propertyType = new RegExp(category, 'i');
+        }
+        const properties = await Property.find(filter);
         res.status(200).json({ success: true, properties });
     } catch (error) {
         next(error);
