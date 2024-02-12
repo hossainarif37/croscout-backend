@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface IBooking extends Document {
+export interface IBooking extends Document {
     guestId: mongoose.Types.ObjectId;
     propertyId: mongoose.Types.ObjectId;
     startDate: Date;
@@ -15,7 +15,7 @@ const BookingSchema: Schema = new Schema({
     propertyId: { type: mongoose.Types.ObjectId, ref: 'Property', required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
+    status: { type: String, enum: ['pending', 'confirmed', 'rejected', 'cancelled'], default: 'pending' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

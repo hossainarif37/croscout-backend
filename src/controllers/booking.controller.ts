@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import Booking from '../models/booking.model';
+import Booking, { IBooking } from '../models/booking.model';
 import Property, { IProperty } from '../models/property.model';
 import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
@@ -10,6 +10,13 @@ interface IOwner {
     email: string;
     name: string;
 }
+
+interface IGuest {
+    _id: mongoose.Types.ObjectId;
+    email: string;
+    name: string;
+}
+
 
 
 // Transporter of Nodemailer for Sending mail
@@ -94,6 +101,69 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
         });
 
         res.status(201).json({ success: true, message: 'Booking successfully created', booking });
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
+
+export const manageBookings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bookingId } = req.params;
+        const { action } = req.body;
+
+        // Find the booking by ID
+        const booking = await Booking.findById(bookingId).populate('guestId') as IBooking & { guestId: IGuest }
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found.' });
+        }
+
+        let message = '';
+        if (action === 'confirm') {
+            booking.status = 'confirmed';
+            message = 'Your booking has been confirmed.';
+        } else if (action === 'reject') {
+            booking.status = 'rejected';
+            message = 'Your booking has been rejected.';
+        } else if (action === 'cancel') {
+            booking.status = 'cancelled';
+            message = 'Your booking has been cancelled.';
+        } else {
+            return res.status(400).json({ success: false, error: 'Invalid action.' });
+        }
+
+
+        await booking.save();
+
+        const gmailUser = process.env.GMAIL_USER;
+        if (!gmailUser) {
+            throw new Error('GMAIL_USER is not set');
+        }
+
+        // Send email to the guest
+        const mailOptions = {
+            from: {
+                name: "Croscout",
+                address: gmailUser
+            },
+            to: booking.guestId.email, // Assuming the guest has an email field
+            subject: `Booking Status Update: ${booking.status}`,
+            text: `Hello ${booking.guestId.name}, your booking has been ${booking.status}.`,
+            html: `<b>Hello ${booking.guestId.name},</b><br><p>Your booking has been ${booking.status}.</p>`
+        };
+
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log(`Email sent: ${info.response}`);
+            }
+        });
+
+        return res.json({ success: true, message: `Booking ${booking.status}.` });
+
     } catch (error) {
         console.error(error);
         next(error);
