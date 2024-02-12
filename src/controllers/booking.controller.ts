@@ -199,7 +199,18 @@ export const getBookingById = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-
+// Delete booking by bookingId
 export const deleteBooking = async (req: Request, res: Response, next: NextFunction) => {
-    // Implementation for deleting a booking
+    try {
+        const { bookingId } = req.params;
+        const result = await Booking.findByIdAndDelete(bookingId).exec();
+
+        if (!result) {
+            return res.status(404).json({ success: false, error: 'Booking not found.' });
+        }
+
+        res.status(200).json({ success: true, message: 'Booking deleted successfully.' });
+    } catch (error) {
+        next(error);
+    }
 };
