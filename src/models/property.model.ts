@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface IProperty extends Document {
+export interface IProperty extends Document {
     name: string;
     description: string;
     amenities: string[];
@@ -9,7 +9,7 @@ interface IProperty extends Document {
     state: string;
     propertyType: string;
     owner: mongoose.Types.ObjectId; // Agent ID
-    bookedDates: Date[];
+    bookedDates: { startDate: Date; endDate: Date }[];
     guests: number;
     propertyImages: string[];
     ratings: number[];
@@ -24,7 +24,10 @@ const PropertySchema: Schema = new Schema({
     state: { type: String, required: true },
     propertyType: { type: String, required: true },
     owner: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
-    bookedDates: [{ type: Date }],
+    bookedDates: [{
+        startDate: { type: Date },
+        endDate: { type: Date }
+    }],
     guests: { type: Number, required: true },
     propertyImages: [{ type: String, required: true }],
     ratings: [{ type: Number }]
