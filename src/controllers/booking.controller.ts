@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Booking, { IBooking } from '../models/booking.model';
+import User, { UserDocument } from '../models/user.model';
 import Property, { IProperty } from '../models/property.model';
 import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
@@ -194,6 +195,27 @@ export const getBookingById = async (req: Request, res: Response, next: NextFunc
         }
 
         res.status(200).json({ success: true, booking });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Controller method for guests to get their bookings
+export const getGuestBookings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ success: false, error: 'Unauthorized: User not authenticated' });
+        }
+        const userId = (req.user as UserDocument)._id;
+
+        const user: UserDocument | null = await User.findById(userId).exec();
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found.' });
+        }
+
+        const bookings: IBooking[] = await Booking.find({ guestId: userId }).exec();
+        res.status(200).json(bookings);
     } catch (error) {
         next(error);
     }
