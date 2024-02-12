@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Request, Response, NextFunction } from 'express';
 
 const checkAuth = (req: Request, res: Response, next: NextFunction) => {
+    console.log('Checking');
     passport.authenticate('jwt', { session: false }, (err: any, user: any, info: any) => {
         if (err || !user) {
             // Handle the unauthorized user case here
