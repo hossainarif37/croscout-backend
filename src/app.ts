@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const propertyRoutes = require('./routes/property.routes');
 const favoritesRoutes = require('./routes/favorite.routes');
+const bookingRoutes = require('./routes/booking.routes');
 
 // Load environment variables from .env file
 dotenvConfig();
@@ -48,6 +49,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/favorites', favoritesRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Route not found
 app.use((req, res, next) => {
