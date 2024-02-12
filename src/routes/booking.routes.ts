@@ -1,6 +1,6 @@
 // routes/bookingRoutes.ts
 import express from 'express';
-import { createBooking, deleteBooking, getAllBookings, getBookingById, getGuestBookings, manageBookings } from '../controllers/booking.controller';
+import { createBooking, deleteBooking, getAllBookings, getBookingById, getBookingsByRole, manageBookings } from '../controllers/booking.controller';
 import { checkAuth } from '../middleware/authentication';
 
 const router = express.Router()
@@ -16,9 +16,8 @@ router
     // Get booking by bookingId
     .get('/:bookingId', getBookingById)
 
-    // Route for guests to get their bookings
-    .get('/guest', checkAuth, getGuestBookings)
-
+    // Get bookings based on role
+    .get('/user/:userId', getBookingsByRole)
 
 
     // Update Booking Informations by bookingId
