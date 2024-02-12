@@ -1,6 +1,6 @@
 // routes/bookingRoutes.ts
 import express from 'express';
-import { createBooking, getAllBookings, manageBookings } from '../controllers/booking.controller';
+import { createBooking, getAllBookings, getBookingById, manageBookings } from '../controllers/booking.controller';
 
 const router = express.Router()
 
@@ -11,6 +11,9 @@ router
 
     // Get all bookings
     .get('/', getAllBookings)
+
+    // Get booking by bookingId
+    .get('/:bookingId', getBookingById)
 
     // Update Booking Informations by bookingId
     .put('/:bookingId', manageBookings)

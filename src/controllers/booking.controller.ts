@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 
 // Define the Owner interface
 interface IOwner {
-    _id: mongoose.Types.ObjectId;
+    _bookingId: mongoose.Types.ObjectId;
     email: string;
     name: string;
 }
@@ -176,15 +176,27 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
 export const getAllBookings = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const bookings: IBooking[] = await Booking.find().exec();
-        res.status(200).json({ success: true, bookings: bookings });
+        res.status(200).json({ success: true, bookings });
     } catch (error) {
         next(error);
     }
 };
 
 
+// Get booking by bookingId
 export const getBookingById = async (req: Request, res: Response, next: NextFunction) => {
-    // Implementation for getting a booking by ID
+    try {
+        const { bookingId } = req.params;
+        const booking: IBooking | null = await Booking.findById(bookingId).exec();
+
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found.' });
+        }
+
+        res.status(200).json({ success: true, booking });
+    } catch (error) {
+        next(error);
+    }
 };
 
 
