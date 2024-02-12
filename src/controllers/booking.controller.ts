@@ -201,19 +201,35 @@ export const getBookingById = async (req: Request, res: Response, next: NextFunc
 };
 
 // Controller method for guests to get their bookings
-export const getGuestBookings = async (req: Request, res: Response, next: NextFunction) => {
+export const getBookingsByRole = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const guestId = req.params.guestId; // Get the guestId from the route parameter
+        const userId = req.params.userId; // Get the userId from the route parameter
 
-        // Find the user by the provided guestId
-        const user: UserDocument | null = await User.findById(guestId).exec();
+        // Find the user by the provided userId
+        const user: UserDocument | null = await User.findById(userId).exec();
 
         if (!user) {
             return res.status(404).json({ success: false, error: 'User not found.' });
         }
 
-        // Find bookings for the user
-        const bookings: IBooking[] = await Booking.find({ guestId: guestId }).exec();
+        let bookings: IBooking[] = [];
+
+        // Check the user's role and retrieve bookings accordingly
+        if (user.role === 'user') {
+            // If the user is a guest, retrieve their bookings
+            bookings = await Booking.find({ guestId: userId }).exec();
+        } else if (user.role === 'agent') {
+            // If the user is an agent, retrieve all bookings for their properties
+            const properties: IProperty[] = await Property.find({ owner: userId }).exec();
+            const propertyIds = properties.map(property => property._id);
+            bookings = await Booking.find({ propertyId: { $in: propertyIds } }).exec();
+        }
+
+        // Check if bookings array is empty and send an appropriate response
+        if (bookings.length === 0) {
+            return res.status(404).json({ success: false, error: 'No bookings found' });
+        }
+
         res.status(200).json({ success: true, bookings });
     } catch (error) {
         console.log('Error checking', error);
