@@ -38,7 +38,8 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
                     name,
                     email,
                     password: hash,
-                    role
+                    role,
+
                 });
                 await newUser.save();
 
