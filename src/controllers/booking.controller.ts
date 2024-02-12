@@ -203,20 +203,20 @@ export const getBookingById = async (req: Request, res: Response, next: NextFunc
 // Controller method for guests to get their bookings
 export const getGuestBookings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (!req.user) {
-            return res.status(401).json({ success: false, error: 'Unauthorized: User not authenticated' });
-        }
-        const userId = (req.user as UserDocument)._id;
+        const guestId = req.params.guestId; // Get the guestId from the route parameter
 
-        const user: UserDocument | null = await User.findById(userId).exec();
+        // Find the user by the provided guestId
+        const user: UserDocument | null = await User.findById(guestId).exec();
 
         if (!user) {
             return res.status(404).json({ success: false, error: 'User not found.' });
         }
 
-        const bookings: IBooking[] = await Booking.find({ guestId: userId }).exec();
-        res.status(200).json(bookings);
+        // Find bookings for the user
+        const bookings: IBooking[] = await Booking.find({ guestId: guestId }).exec();
+        res.status(200).json({ success: true, bookings });
     } catch (error) {
+        console.log('Error checking', error);
         next(error);
     }
 };

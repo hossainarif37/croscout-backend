@@ -17,7 +17,7 @@ router
     .get('/:bookingId', getBookingById)
 
     // Route for guests to get their bookings
-    .get('/guest', checkAuth, getGuestBookings)
+    .get('/guest/:guestId', getGuestBookings)
 
 
 
