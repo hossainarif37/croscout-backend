@@ -16,6 +16,7 @@ const userSchema: Schema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    role: { type: String, enum: ['user', 'agent', 'admin'], required: true, default: 'user' },
     isAdmin: { type: Boolean, default: false },
     agentId: { type: Schema.Types.ObjectId, ref: 'Agent' },
     favoriteList: { type: mongoose.Types.ObjectId, ref: 'FavoriteList' },

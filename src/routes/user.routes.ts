@@ -23,6 +23,8 @@ router
      */
     .get('/current-user', checkAuth, userController.getCurrentUser)
 
+    .get('/by-userid/:userId', userController.getUserDataById)
+
     // Route for getting all users
     .get('/all-users', getAllUsers)
 
