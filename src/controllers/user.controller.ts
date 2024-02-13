@@ -45,7 +45,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 export const deleteUser = async (req: RequestWithUser, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.userId;
-        const loggedInUserId = req.user._id; // Assuming req.user is populated with the authenticated user
+        const loggedInUserId = req.user._id;
 
         if (userId !== loggedInUserId.toString()) {
             return res.status(403).json({ success: false, error: 'You can only delete your own account.' });
