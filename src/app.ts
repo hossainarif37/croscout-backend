@@ -3,7 +3,7 @@ import cors from 'cors';
 import passport from 'passport';
 import session from 'express-session';
 import { config as dotenvConfig } from 'dotenv';
-const cookieParser = require('cookie-parser')
+// const cookieParser = require('cookie-parser')
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const propertyRoutes = require('./routes/property.routes');
@@ -24,9 +24,9 @@ app.use(express.json());
 
 app.use(cors({
     origin: process.env.CLIENT_URL ? [process.env.CLIENT_URL, "http://localhost:3000", "https://airbnb-clone-git-dev-arif-hossainarif37.vercel.app"] : "http://localhost:3000" || '*',
-    credentials: true
+    // credentials: true
 }));
-app.use(cookieParser());
+// app.use(cookieParser());
 
 
 // Configure express-session middleware

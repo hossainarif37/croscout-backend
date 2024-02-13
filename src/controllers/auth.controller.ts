@@ -89,14 +89,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
             if (result) {
                 //* Generate jwt token
                 const token = jwt.sign(payload, process.env.JWT_SECRET_KEY!, { expiresIn: '1d' });
-                res.status(200).cookie("token",
-                    token,
-                    {
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV === 'production',
-                        // sameSite: 'none'
-                    }
-                ).send({
+                res.status(200).send({
                     success: true,
                     message: "Login in successfully",
                     token: `Bearer ${token}`,
@@ -118,12 +111,13 @@ export const logOutUser = async (req: Request, res: Response, next: NextFunction
             if (err) {
                 return next(err);
             }
-        res.clearCookie('token', {
-            maxAge: 0,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            // sameSite: 'none'
-        }).send({ message: 'Logout Successfully', isLogout: true })
+            res.send({ isLogout: true });
+            // res.clearCookie('token', {
+            //     maxAge: 0,
+            //     httpOnly: true,
+            //     secure: process.env.NODE_ENV === 'production',
+            //     // sameSite: 'none'
+            // }).send({ message: 'Logout Successfully', isLogout: true })
         });
     } catch (error) {
         next(error);
