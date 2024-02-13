@@ -14,6 +14,23 @@ export const getCurrentUser = async (req: Request, res: Response, next: NextFunc
     }
 };
 
+export const getUserDataById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.params.userId; // Extract userId from the request parameters
+
+        // Find the user by the provided userId and exclude the password field
+        const user: UserDocument | null = await User.findById(userId, '-password').exec();
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found.' });
+        }
+
+        res.status(200).json({ success: true, user });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Controller method for getting all users
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
