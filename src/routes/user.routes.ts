@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
+import { deleteUser, getAllUsers } from "../controllers/user.controller";
 import { checkAuth } from "../middleware/authentication";
 
 
@@ -20,6 +21,12 @@ router
      * @description Check if the user is authenticated before allowing access to certain routes.
      * @access Private
      */
-    .get('/current-user', checkAuth, userController.getCurrentUser);
+    .get('/current-user', checkAuth, userController.getCurrentUser)
+
+    // Route for getting all users
+    .get('/all-users', getAllUsers)
+
+    // Route for deleting a user (must be authenticated)
+    .delete('/:userId', checkAuth, deleteUser);
 
 module.exports = router;
