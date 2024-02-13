@@ -33,7 +33,7 @@ const transporter = nodemailer.createTransport({
 // Create Booking for a Property
 export const createBooking = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { guestId, propertyId, startDate, endDate } = req.body;
+        const { guestId, propertyId, price, startDate, endDate } = req.body;
 
         // Find the property and cast the owner to the IOwner interface
         const property = await Property.findById(propertyId).populate('owner') as IProperty & { owner: IOwner };
@@ -62,6 +62,7 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
         // Create a new booking
         const booking = new Booking({
             guestId,
+            price,
             propertyId,
             startDate,
             endDate,
