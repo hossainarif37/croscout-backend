@@ -93,7 +93,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
                     token,
                     {
                         httpOnly: true,
-                        // secure: process.env.NODE_ENV === 'production',
+                        secure: process.env.NODE_ENV === 'production',
                         sameSite: 'none'
                     }
                 ).send({
@@ -121,7 +121,7 @@ export const logOutUser = async (req: Request, res: Response, next: NextFunction
             res.clearCookie('token', {
                 maxAge: 0,
                 httpOnly: true,
-                // secure: process.env.NODE_ENV === 'production',
+                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'none'
             }).send({ message: 'Logout Successfully', isLogout: true })
         });
