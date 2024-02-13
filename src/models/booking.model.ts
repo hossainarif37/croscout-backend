@@ -1,8 +1,10 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IBooking extends Document {
-    guestId: mongoose.Types.ObjectId;
-    propertyId: mongoose.Types.ObjectId;
+    guest: mongoose.Types.ObjectId;
+    property: mongoose.Types.ObjectId;
+    owner: mongoose.Types.ObjectId;
+    price: string;
     startDate: Date;
     endDate: Date;
     status: string; // Booking status (e.g., confirmed, rejected, cancelled)
@@ -11,8 +13,10 @@ export interface IBooking extends Document {
 }
 
 const BookingSchema: Schema = new Schema({
-    guestId: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
-    propertyId: { type: mongoose.Types.ObjectId, ref: 'Property', required: true },
+    guest: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+    property: { type: mongoose.Types.ObjectId, ref: 'Property', required: true },
+    owner: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+    price: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     status: { type: String, enum: ['pending', 'confirmed', 'rejected', 'cancelled'], default: 'pending' },

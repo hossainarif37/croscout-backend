@@ -33,17 +33,20 @@ const transporter = nodemailer.createTransport({
 // Create Booking for a Property
 export const createBooking = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { guestId, propertyId, startDate, endDate } = req.body;
+        const { guestId, ownerId, propertyId, price, startDate, endDate } = req.body;
+
 
         // Find the property and cast the owner to the IOwner interface
-        const property = await Property.findById(propertyId).populate('owner') as IProperty & { owner: IOwner };
+        const property = await Property.findById(propertyId)
+            .populate('owner') as IProperty & { owner: IOwner };
+
         if (!property) {
             return res.status(404).json({ message: 'Property not found.' });
-        }
+        };
 
         // Check if the property is already booked for the same dates
         const existingBooking = await Booking.findOne({
-            propertyId: propertyId,
+            property: propertyId,
             $or: [
                 {
                     startDate: { $lte: endDate },
@@ -61,8 +64,10 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
 
         // Create a new booking
         const booking = new Booking({
-            guestId,
-            propertyId,
+            guest: guestId,
+            owner: ownerId,
+            price,
+            property: propertyId,
             startDate,
             endDate,
             createdAt: new Date(),
@@ -176,7 +181,7 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
 // Get All Bookings
 export const getAllBookings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const bookings: IBooking[] = await Booking.find().exec();
+        const bookings: IBooking[] = await Booking.find();
         res.status(200).json({ success: true, bookings });
     } catch (error) {
         next(error);
@@ -188,11 +193,15 @@ export const getAllBookings = async (req: Request, res: Response, next: NextFunc
 export const getBookingById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { bookingId } = req.params;
-        const booking: IBooking | null = await Booking.findById(bookingId).exec();
+        const booking: IBooking | null = await Booking.findById(bookingId)
+            .populate('guest', '-password')
+            .populate('property', '-bookedDates')
+            .populate('owner', '-password')
 
         if (!booking) {
             return res.status(404).json({ success: false, error: 'Booking not found.' });
         }
+
 
         res.status(200).json({ success: true, booking });
     } catch (error) {
@@ -204,9 +213,10 @@ export const getBookingById = async (req: Request, res: Response, next: NextFunc
 export const getBookingsByRole = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.userId; // Get the userId from the route parameter
-
         // Find the user by the provided userId
         const user: UserDocument | null = await User.findById(userId).exec();
+
+
 
         if (!user) {
             return res.status(404).json({ success: false, error: 'User not found.' });
@@ -215,14 +225,18 @@ export const getBookingsByRole = async (req: Request, res: Response, next: NextF
         let bookings: IBooking[] = [];
 
         // Check the user's role and retrieve bookings accordingly
+        console.log(229, user.role);
         if (user.role === 'user') {
+            bookings = await Booking.find({ guest: userId })
+                .populate('owner')
+                .populate('property', '-bookedDates')
+
             // If the user is a guest, retrieve their bookings
-            bookings = await Booking.find({ guestId: userId }).exec();
         } else if (user.role === 'agent') {
             // If the user is an agent, retrieve all bookings for their properties
-            const properties: IProperty[] = await Property.find({ owner: userId }).exec();
-            const propertyIds = properties.map(property => property._id);
-            bookings = await Booking.find({ propertyId: { $in: propertyIds } }).exec();
+            bookings = await Booking.find({ guest: userId })
+                .populate('guest')
+                .populate('property', '-bookedDates')
         }
 
         // Check if bookings array is empty and send an appropriate response
