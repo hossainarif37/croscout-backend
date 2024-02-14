@@ -5,6 +5,7 @@ export interface IBooking extends Document {
     property: mongoose.Types.ObjectId;
     owner: mongoose.Types.ObjectId;
     price: string;
+    totalGuests: string;
     startDate: Date;
     endDate: Date;
     status: string; // Booking status (e.g., confirmed, rejected, cancelled)
@@ -17,6 +18,7 @@ const BookingSchema: Schema = new Schema({
     property: { type: mongoose.Types.ObjectId, ref: 'Property', required: true },
     owner: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
     price: { type: String, required: true },
+    totalGuests: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     status: { type: String, enum: ['pending', 'confirmed', 'rejected', 'cancelled'], default: 'pending' },
