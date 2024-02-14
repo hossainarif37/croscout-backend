@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { addToFavorites, getFavorites } from '../controllers/favorite.controller';
+import { addToFavorites, checkFavoriteProperty, deleteFavorite, getFavorites } from '../controllers/favorite.controller';
 
 const router = express.Router();
 
@@ -11,5 +11,9 @@ router
 
     // Get Favorite Properties by UserId
     .get('/:userId', getFavorites)
+
+    .delete("/:userId", deleteFavorite)
+
+    .get('/:userId/check-favorite', checkFavoriteProperty)
 
 module.exports = router;
