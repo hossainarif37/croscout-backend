@@ -181,7 +181,7 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
 // Get All Bookings
 export const getAllBookings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const bookings: IBooking[] = await Booking.find();
+        const bookings: IBooking[] = await Booking.find().populate('guest', 'name -_id');
         res.status(200).json({ success: true, bookings });
     } catch (error) {
         next(error);
@@ -234,7 +234,7 @@ export const getBookingsByRole = async (req: Request, res: Response, next: NextF
             // If the user is a guest, retrieve their bookings
         } else if (user.role === 'agent') {
             // If the user is an agent, retrieve all bookings for their properties
-            bookings = await Booking.find({ guest: userId })
+            bookings = await Booking.find({ owner: userId })
                 .populate('guest')
                 .populate('property', '-bookedDates')
         }
