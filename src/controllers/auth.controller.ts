@@ -75,6 +75,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         }
 
         const user = await User.findOne({ email });
+        console.log(user);
         if (!user) {
             return res.status(404).send({ success: false, error: 'User not found' });
         }
@@ -82,7 +83,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         const payload = {
             id: user._id,
             email: user.email,
-            role: user.role
+            role: user.role,
         };
 
         bcrypt.compare(password, user.password, (err: Error | null, result: boolean) => {
