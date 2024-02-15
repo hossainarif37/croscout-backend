@@ -8,7 +8,7 @@ export interface IBooking extends Document {
     totalGuests: string;
     startDate: Date;
     endDate: Date;
-    status: string; // Booking status (e.g., confirmed, rejected, cancelled)
+    status: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -21,7 +21,7 @@ const BookingSchema: Schema = new Schema({
     totalGuests: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    status: { type: String, enum: ['pending', 'confirmed', 'rejected', 'cancelled'], default: 'pending' },
+    status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

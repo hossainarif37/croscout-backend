@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import User, { UserDocument } from '../models/user.model';
-import Agent from '../models/agent.model';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -11,6 +10,7 @@ dotenv.config();
 const saltRounds = 10;
 
 //* User Registration Controller  
+//* User Registration Controller   
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password, name, role, taxNumber } = req.body;
@@ -39,18 +39,9 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
                     email,
                     password: hash,
                     role,
-
+                    ...(role === 'agent' ? { taxNumber } : {}), // Conditionally add taxNumber if role is 'agent'
                 });
                 await newUser.save();
-
-                if (role === 'agent') {
-                    //* Create a new Agent document linked to the new User
-                    const newAgent = new Agent({
-                        user: newUser._id,
-                        taxNumber: taxNumber
-                    });
-                    await newAgent.save();
-                }
 
                 return res.status(201).json({
                     success: true,

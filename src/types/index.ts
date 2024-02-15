@@ -7,7 +7,6 @@ export interface RequestWithUser extends Request {
         // email: string;
         // password: string;
         // role: 'user' | 'agent' | 'admin';
-        // agentId?: mongoose.Types.ObjectId;
         // favoriteList?: mongoose.Types.ObjectId;
         // resetPasswordToken?: string;
         // resetPasswordExpires?: Date;
