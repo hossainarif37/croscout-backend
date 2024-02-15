@@ -62,3 +62,23 @@ export const deleteUser = async (req: RequestWithUser, res: Response, next: Next
         next(error);
     }
 };
+
+// Controller method for updating a user
+// Define routes
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.params.userId;
+        const updateDocuments = req.body;
+
+
+        const user = await User.findByIdAndUpdate(userId, updateDocuments, { new: true });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        return res.json(user);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        next(error);
+    }
+};
