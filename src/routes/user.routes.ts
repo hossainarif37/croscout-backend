@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-import { deleteUser, getAllUsers, getUserByRole, getUsersByRole, updatePassword, updateUser } from "../controllers/user.controller";
+import { deleteUser, getAllUsers, getUsersByRole, updatePassword, updateUser } from "../controllers/user.controller";
 import { checkAuth } from "../middleware/authentication";
 
 
