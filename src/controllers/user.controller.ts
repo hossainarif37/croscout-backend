@@ -41,6 +41,21 @@ export const getUserDataById = async (req: Request, res: Response, next: NextFun
     }
 };
 
+export const getUsersByRole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { role } = req.query;
+
+        // Find the users by the provided role
+        const users: UserDocument[] = await User.find({ role }).exec();
+        res.status(200).json({ success: true, users });
+
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+}
+
+
 // Controller method for getting all users
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {

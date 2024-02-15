@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-import { deleteUser, getAllUsers, updatePassword, updateUser } from "../controllers/user.controller";
+import { deleteUser, getAllUsers, getUsersByRole, updatePassword, updateUser } from "../controllers/user.controller";
 import { checkAuth } from "../middleware/authentication";
 
 
@@ -24,6 +24,9 @@ router
     .get('/current-user', checkAuth, userController.getCurrentUser)
 
     .get('/by-userid/:userId', userController.getUserDataById)
+
+    // Route for getting users by provided role
+    .get('/users/by-role', getUsersByRole)
 
     // Route for getting all users
     .get('/all-users', getAllUsers)
