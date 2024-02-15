@@ -78,17 +78,17 @@ export const deleteUser = async (req: RequestWithUser, res: Response, next: Next
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.userId;
-        const body = req.body;
-        const role = req.body.role;
+        const body = req?.body?.update;
+        const role = body?.role;
 
         const commonProperties: Partial<ICommonProperties> = {
-            name: body.name,
-            image: body.image
+            name: body?.name,
+            image: body?.image
         };
 
         if (role === "agent") {
             commonProperties.role = "agent";
-            commonProperties.taxNumber = body.taxNumber;
+            commonProperties.taxNumber = body?.taxNumber;
         }
 
         const updatedDoc = {
@@ -101,7 +101,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
             return res.status(404).json({ message: 'User not found' });
         }
 
-        return res.status(200).send({success: true, message: "User Info Update"});
+        return res.status(200).send({ success: true, message: "User Info Update" });
     } catch (error) {
         console.error('Error updating user:', error);
         next(error);
@@ -113,8 +113,6 @@ export const updatePassword = async (req: Request, res: Response, next: NextFunc
     try {
         const userId = req.params.userId;
         const { oldPassword, newPassword } = req.body.update;
-        console.log(oldPassword, newPassword);
-
         // Use await to wait for the user to be fetched
         const user: any = await User.findById(userId);
         if (!user) {
