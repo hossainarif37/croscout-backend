@@ -11,6 +11,9 @@ export interface IBooking extends Document {
     status: string;
     createdAt: Date;
     updatedAt: Date;
+    agentPaypalEmail?: string;
+    paymentInstruction?: string;
+    userTransactionId?: string
 }
 
 const BookingSchema: Schema = new Schema({
@@ -23,7 +26,10 @@ const BookingSchema: Schema = new Schema({
     endDate: { type: Date, required: true },
     status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    updatedAt: { type: Date, default: Date.now },
+    agentPaypalEmail: { type: String },
+    paymentInstruction: { type: String },
+    userTransactionId: { type: String }
 });
 
 const Booking = mongoose.model<IBooking>('Booking', BookingSchema);
