@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-import { deleteUser, getAllUsers } from "../controllers/user.controller";
+import { deleteUser, getAllUsers, updateUser } from "../controllers/user.controller";
 import { checkAuth } from "../middleware/authentication";
 
 
@@ -29,6 +29,9 @@ router
     .get('/all-users', getAllUsers)
 
     // Route for deleting a user (must be authenticated)
-    .delete('/:userId', checkAuth, deleteUser);
+    .delete('/:userId', checkAuth, deleteUser)
+
+    // Route for updating a user (must be authenticated)
+    .put('/:userId', updateUser)
 
 module.exports = router;

@@ -7,6 +7,7 @@ export interface UserDocument extends Document {
     role: 'user' | 'agent' | 'admin';
     taxNumber: string;
     isAdmin: boolean;
+    image?: string;
     favoriteList?: mongoose.Types.ObjectId[]; // Array of ObjectId references
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
@@ -19,6 +20,7 @@ const userSchema: Schema = new Schema({
     role: { type: String, enum: ['user', 'agent', 'admin'], required: true, default: 'user' },
     taxNumber: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
+    image: { type: String },
     favoriteList: [{ type: Schema.Types.ObjectId, ref: 'Property' }], // Array of ObjectId references to Property model
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
