@@ -5,6 +5,13 @@ import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 const saltRounds = 10;
 
+interface ICommonProperties {
+    image: string;
+    name: string;
+    taxNumber: string;
+    role: string;
+}
+
 export const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         res.status(200).json({
@@ -71,25 +78,42 @@ export const deleteUser = async (req: RequestWithUser, res: Response, next: Next
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.userId;
-        const updateDocuments = req.body;
+        const body = req.body;
+        const role = req.body.role;
 
+        const commonProperties: Partial<ICommonProperties> = {
+            name: body.name,
+            image: body.image
+        };
 
-        const user = await User.findByIdAndUpdate(userId, updateDocuments, { new: true });
+        if (role === "agent") {
+            commonProperties.role = "agent";
+            commonProperties.taxNumber = body.taxNumber;
+        }
+
+        const updatedDoc = {
+            $set: commonProperties
+        };
+
+        const user = await User.findByIdAndUpdate(userId, updatedDoc, { new: true });
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        return res.json(user);
+        return res.status(200).send({success: true, message: "User Info Update"});
     } catch (error) {
         console.error('Error updating user:', error);
         next(error);
     }
 };
 
+
 export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.userId;
-        const { oldPassword, newPassword } = req.body;
+        const { oldPassword, newPassword } = req.body.update;
+        console.log(oldPassword, newPassword);
 
         // Use await to wait for the user to be fetched
         const user: any = await User.findById(userId);
@@ -121,7 +145,7 @@ export const updatePassword = async (req: Request, res: Response, next: NextFunc
                     }
                 });
             } else {
-                res.status(401).json({ success: false, error: 'Wrong password' });
+                res.status(401).send({ success: false, error: 'Wrong password' });
             }
         });
     } catch (error) {

@@ -19,7 +19,7 @@ const userSchema: Schema = new Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'agent', 'admin'], required: true, default: 'user' },
-    taxNumber: { type: String, required: true },
+    taxNumber: { type: String },
     isAdmin: { type: Boolean, default: false },
     image: { type: String },
     favoriteList: [{ type: Schema.Types.ObjectId, ref: 'Property' }], // Array of ObjectId references to Property model
