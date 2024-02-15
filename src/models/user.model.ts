@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface UserDocument extends Document {
+    _id: mongoose.Types.ObjectId;
     name: string;
     email: string;
     password: string;
@@ -11,7 +12,8 @@ export interface UserDocument extends Document {
     favoriteList?: mongoose.Types.ObjectId[]; // Array of ObjectId references
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
-    _id: mongoose.Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const userSchema: Schema = new Schema({
@@ -25,6 +27,8 @@ const userSchema: Schema = new Schema({
     favoriteList: [{ type: Schema.Types.ObjectId, ref: 'Property' }], // Array of ObjectId references to Property model
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
 });
 
 export default mongoose.model<UserDocument>('User', userSchema);
