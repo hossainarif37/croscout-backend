@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import User, { UserDocument } from '../models/user.model';
 import { RequestWithUser } from '../types';
+import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
+const saltRounds = 10;
 
 export const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -77,6 +80,50 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
         }
 
         return res.json(user);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        next(error);
+    }
+};
+
+export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.params.userId;
+        const { oldPassword, newPassword } = req.body;
+
+        // Use await to wait for the user to be fetched
+        const user: any = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Compare the passwords
+        bcrypt.compare(oldPassword, user.password, async (err: Error | null, result: boolean) => {
+            if (err) {
+                // Handle the error
+                return res.status(500).json({ success: false, error: err.message });
+            }
+            if (result) {
+                bcrypt.hash(newPassword, saltRounds, async (err: Error | null, hash: string) => {
+                    try {
+                        const userIdObjectId = new mongoose.Types.ObjectId(userId);
+                        const updatedDoc = {
+                            $set: {
+                                password: hash
+                            }
+                        }
+                        const response = await User.updateOne({ _id: userIdObjectId }, updatedDoc);
+                        res.send({ success: true, message: "Password Changed", data: response })
+
+                    } catch (error: any) {
+                        res.send({ success: false, message: error.message })
+                        next(error);
+                    }
+                });
+            } else {
+                res.status(401).json({ success: false, error: 'Wrong password' });
+            }
+        });
     } catch (error) {
         console.error('Error updating user:', error);
         next(error);

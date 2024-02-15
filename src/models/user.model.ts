@@ -11,6 +11,7 @@ export interface UserDocument extends Document {
     favoriteList?: mongoose.Types.ObjectId[]; // Array of ObjectId references
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
+    _id: mongoose.Types.ObjectId;
 }
 
 const userSchema: Schema = new Schema({

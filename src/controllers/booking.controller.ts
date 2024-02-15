@@ -124,7 +124,6 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
         // Find the booking by ID
         const booking = await Booking.findById(bookingId).populate('guest') as IBooking & { guest: IGuest };
 
-
         if (!booking) {
             return res.status(404).json({ success: false, error: 'Booking not found.' });
         }
