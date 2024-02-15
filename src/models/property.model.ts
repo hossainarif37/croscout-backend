@@ -8,7 +8,7 @@ export interface IProperty extends Document {
     location: string;
     state: string;
     propertyType: string;
-    owner: mongoose.Types.ObjectId; // Agent ID
+    owner: mongoose.Types.ObjectId;
     bookedDates: { startDate: Date; endDate: Date }[];
     guests: number;
     propertyImages: string[];

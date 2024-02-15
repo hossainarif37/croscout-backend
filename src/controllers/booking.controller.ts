@@ -122,27 +122,33 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
         const { action } = req.body;
 
         // Find the booking by ID
-        const booking = await Booking.findById(bookingId).populate('guestId') as IBooking & { guestId: IGuest }
+        const booking = await Booking.findById(bookingId).populate('guest') as IBooking & { guest: IGuest };
+
+
         if (!booking) {
             return res.status(404).json({ success: false, error: 'Booking not found.' });
         }
+        const properties = await Property.findById(booking.property);
 
         let message = '';
         if (action === 'confirm') {
             booking.status = 'confirmed';
             message = 'Your booking has been confirmed.';
-        } else if (action === 'reject') {
-            booking.status = 'rejected';
-            message = 'Your booking has been rejected.';
         } else if (action === 'cancel') {
+            // Remove the booking's startDate and endDate from the property's bookedDates
+            if (properties?.bookedDates) {
+                properties.bookedDates = properties.bookedDates.filter(date =>
+                    !(date.startDate.getTime() === booking.startDate.getTime() && date.endDate.getTime() === booking.endDate.getTime())
+                );
+            }
             booking.status = 'cancelled';
             message = 'Your booking has been cancelled.';
         } else {
             return res.status(400).json({ success: false, error: 'Invalid action.' });
         }
 
-
-        await booking.save();
+        await booking.save({ validateBeforeSave: false });
+        await properties?.save();
 
         const gmailUser = process.env.GMAIL_USER;
         if (!gmailUser) {
@@ -150,26 +156,30 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
         }
 
         // Send email to the guest
-        const mailOptions = {
-            from: {
-                name: "Croscout",
-                address: gmailUser
-            },
-            to: booking.guestId.email, // Assuming the guest has an email field
-            subject: `Booking Status Update: ${booking.status}`,
-            text: `Hello ${booking.guestId.name}, your booking has been ${booking.status}.`,
-            html: `<b>Hello ${booking.guestId.name},</b><br><p>Your booking has been ${booking.status}.</p>`
-        };
+        if (booking.guest) {
+            const mailOptions = {
+                from: {
+                    name: "Croscout",
+                    address: gmailUser
+                },
+                to: booking.guest.email, // Assuming the guest has an email field
+                subject: `Booking Status Update: ${booking.status}`,
+                text: `Hello ${booking.guest.name}, your booking has been ${booking.status}.`,
+                html: `<b>Hello ${booking.guest.name},</b><br><p>Your booking has been ${booking.status}.</p>`
+            };
 
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error sending email:', error);
+                } else {
+                    console.log(`Email sent: ${info.response}`);
+                }
+            });
+        }
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-            } else {
-                console.log(`Email sent: ${info.response}`);
-            }
-        });
-
+        if (booking.status === 'cancelled') {
+            await Booking.deleteOne({ _id: booking._id });
+        }
         return res.json({ success: true, message: `Booking ${booking.status}.` });
 
     } catch (error) {
@@ -177,6 +187,7 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 };
+
 
 
 // Get All Bookings
