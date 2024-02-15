@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-import { deleteUser, getAllUsers, updateUser } from "../controllers/user.controller";
+import { deleteUser, getAllUsers, updatePassword, updateUser } from "../controllers/user.controller";
 import { checkAuth } from "../middleware/authentication";
 
 
@@ -33,5 +33,8 @@ router
 
     // Route for updating a user (must be authenticated)
     .put('/:userId', updateUser)
+
+    // Route for updating a users password (must be authenticated)
+    .patch('/update-password/:userId', updatePassword)
 
 module.exports = router;
