@@ -18,6 +18,14 @@ const checkAuth = (req: RequestWithUser, res: Response, next: NextFunction) => {
     })(req, res, next);
 };
 
+// // Middleware to check if the user has the required role
+// export const checkRole = (role: string) => (req: Request, res: Response, next: NextFunction) => {
+//     if (req.user.role !== role) {
+//         return res.status(403).json({ message: 'Forbidden' });
+//     }
+//     next();
+// };
+
 // const checkAuth = async (req: RequestWithUser, res: Response, next: NextFunction) => {
 //     const token = req.cookies?.token;
 //     const secret = process.env.JWT_SECRET_KEY;

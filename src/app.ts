@@ -9,6 +9,7 @@ const userRoutes = require('./routes/user.routes');
 const propertyRoutes = require('./routes/property.routes');
 const favoritesRoutes = require('./routes/favorite.routes');
 const bookingRoutes = require('./routes/booking.routes');
+const transactionRoutes = require('./routes/transaction.routes');
 
 // Load environment variables from .env file
 dotenvConfig();
@@ -47,12 +48,28 @@ app.get('/', (req, res) => {
     res.send('Welcome to Airbnb server');
 });
 
-// API Routes
+//**---------------- API Routes Start --------------------**//
+
+// Authentication Routes
 app.use('/api/auth', authRoutes);
+
+// User Routes
 app.use('/api/user', userRoutes);
+
+// Properties Routes
 app.use('/api/properties', propertyRoutes);
+
+// Favorites Routes
 app.use('/api/favorites', favoritesRoutes);
+
+// Booking Routes
 app.use('/api/bookings', bookingRoutes);
+
+// Transaction Routes
+app.use('/api/transactions', transactionRoutes);
+
+//**---------------- API Routes End --------------------**//
+
 
 // Route not found
 app.use((req, res, next) => {
