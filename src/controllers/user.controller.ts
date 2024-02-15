@@ -1,6 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import User, { UserDocument } from '../models/user.model';
 import { RequestWithUser } from '../types';
+import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
+const saltRounds = 10;
+
+interface ICommonProperties {
+    image: string;
+    name: string;
+    taxNumber: string;
+    role: string;
+}
 
 export const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -68,15 +78,74 @@ export const deleteUser = async (req: RequestWithUser, res: Response, next: Next
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.userId;
-        const updateDocuments = req.body;
+        const body = req?.body?.update;
+        const role = body?.role;
 
+        const commonProperties: Partial<ICommonProperties> = {
+            name: body?.name,
+            image: body?.image
+        };
 
-        const user = await User.findByIdAndUpdate(userId, updateDocuments, { new: true });
+        if (role === "agent") {
+            commonProperties.role = "agent";
+            commonProperties.taxNumber = body?.taxNumber;
+        }
+
+        const updatedDoc = {
+            $set: commonProperties
+        };
+
+        const user = await User.findByIdAndUpdate(userId, updatedDoc, { new: true });
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        return res.json(user);
+        return res.status(200).send({ success: true, message: "User Info Update" });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        next(error);
+    }
+};
+
+
+export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.params.userId;
+        const { oldPassword, newPassword } = req.body.update;
+        // Use await to wait for the user to be fetched
+        const user: any = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Compare the passwords
+        bcrypt.compare(oldPassword, user.password, async (err: Error | null, result: boolean) => {
+            if (err) {
+                // Handle the error
+                return res.status(500).json({ success: false, error: err.message });
+            }
+            if (result) {
+                bcrypt.hash(newPassword, saltRounds, async (err: Error | null, hash: string) => {
+                    try {
+                        const userIdObjectId = new mongoose.Types.ObjectId(userId);
+                        const updatedDoc = {
+                            $set: {
+                                password: hash
+                            }
+                        }
+                        const response = await User.updateOne({ _id: userIdObjectId }, updatedDoc);
+                        res.send({ success: true, message: "Password Changed", data: response })
+
+                    } catch (error: any) {
+                        res.send({ success: false, message: error.message })
+                        next(error);
+                    }
+                });
+            } else {
+                res.status(401).send({ success: false, error: 'Wrong password' });
+            }
+        });
     } catch (error) {
         console.error('Error updating user:', error);
         next(error);
