@@ -4,6 +4,7 @@ import User, { UserDocument } from '../models/user.model';
 import Property, { IProperty } from '../models/property.model';
 import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
+import Transaction from '../models/transaction.model';
 
 // Define the Owner interface
 interface IOwner {
@@ -133,10 +134,38 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
 
         let message = '';
         if (action === 'confirm') {
+            if (booking.status === 'confirmed') {
+                return res.json({ success: false, error: "Already confirmed this booking" })
+            }
             booking.status = 'confirmed';
             message = 'Your booking has been confirmed.';
+
+            // Create a new transaction when the booking is confirmed
+            const transaction = new Transaction({
+                booking: booking._id,
+                user: booking.guest._id,
+                agent: booking.owner,
+                amount: parseFloat(booking.price),
+                transactionId: booking.userTransactionId,
+                paymentMethod: 'Paypal',
+            });
+
+            if (!booking.agentPaypalEmail) {
+                return res.json({ success: false, error: "You haven't sent a Payment Request with Payment Details to the user. Please send the payment request before updating the status." });
+            }
+
+            if (!booking.userTransactionId) {
+                return res.json({ success: false, error: "Transaction ID has not been received yet. Please wait until the Transaction ID is received before updating the status." });
+            }
+            // Save the transaction to the database
+            await transaction.save();
+
+
         } else if (action === 'cancel') {
             // Remove the booking's startDate and endDate from the property's bookedDates
+            if (booking.status === 'confirmed') {
+                return res.json({ success: false, error: "This booking has already been confirmed. Cancellation is not allowed at this stage." })
+            }
             if (properties?.bookedDates) {
                 properties.bookedDates = properties.bookedDates.filter(date =>
                     !(date.startDate.getTime() === booking.startDate.getTime() && date.endDate.getTime() === booking.endDate.getTime())
@@ -181,7 +210,7 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
         if (booking.status === 'cancelled') {
             await Booking.deleteOne({ _id: booking._id });
         }
-        return res.json({ success: true, message: `Booking ${booking.status}.` });
+        return res.json({ success: true, message });
 
     } catch (error) {
         console.error(error);
@@ -194,7 +223,7 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
 // Get All Bookings
 export const getAllBookings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const bookings: IBooking[] = await Booking.find().populate('guest', 'name -_id');
+        const bookings: IBooking[] = await Booking.find().populate('guest', 'name -_id').populate('owner', 'name -_id');
         res.status(200).json({ success: true, bookings });
     } catch (error) {
         next(error);
