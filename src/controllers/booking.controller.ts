@@ -318,7 +318,7 @@ export const submitTransactionId = async (req: Request, res: Response, next: Nex
 
         // TODO: Send email notification to agent with transaction ID
 
-        res.json(booking);
+        res.json({ success: true, message: "Transaction id updated successfully" });
     } catch (error) {
         console.log(error);
         next(error)
