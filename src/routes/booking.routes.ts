@@ -1,6 +1,6 @@
 // routes/bookingRoutes.ts
 import express from 'express';
-import { createBooking, deleteBooking, getAllBookings, getBookingById, getBookingsByRole, manageBookings } from '../controllers/booking.controller';
+import { createBooking, deleteBooking, getAllBookings, getBookingById, getBookingsByRole, manageBookings, submitTransactionId, updatePaymentDetails } from '../controllers/booking.controller';
 import { checkAuth } from '../middleware/authentication';
 
 const router = express.Router()
@@ -25,6 +25,13 @@ router
 
     // Update Booking Informations by bookingId
     .delete('/:bookingId', deleteBooking)
+
+    // Update payment details for a booking.
+    .put('/:bookingId/payment-details', updatePaymentDetails)
+
+    // Submit the transaction ID for a booking.
+    .post('/:bookingId/transaction-id', submitTransactionId)
+
 
 // .get('/bookings/:userId', getAllBookingsForUser)
 

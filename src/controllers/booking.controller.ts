@@ -88,24 +88,26 @@ export const createBooking = async (req: Request, res: Response, next: NextFunct
             throw new Error('GMAIL_USER is not set');
         }
 
-        const mailOptions = {
-            from: {
-                name: "Croscout",
-                address: gmailUser
-            },
-            to: property.owner.email, // Assuming the owner has an email field
-            subject: 'New Booking Confirmation',
-            text: `Hello ${property.owner.name}, a new booking has been made for your property.`,
-            html: `<b>Hello ${property.owner.name},</b><br><p>A new booking has been made for your property.</p>`
-        };
+        if (property && property.owner) {
+            const mailOptions = {
+                from: {
+                    name: "Croscout",
+                    address: gmailUser
+                },
+                to: property.owner.email, // Assuming the owner has an email field
+                subject: 'New Booking Confirmation',
+                text: `Hello ${property.owner.name}, a new booking has been made for your property.`,
+                html: `<b>Hello ${property.owner.name},</b><br><p>A new booking has been made for your property.</p>`
+            };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-            } else {
-                console.log(`Email sent: ${info.response}`);
-            }
-        });
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error sending email:', error);
+                } else {
+                    console.log(`Email sent: ${info.response}`);
+                }
+            });
+        }
 
         res.status(201).json({ success: true, message: 'Booking successfully created', booking });
     } catch (error) {
@@ -273,5 +275,51 @@ export const deleteBooking = async (req: Request, res: Response, next: NextFunct
         res.status(200).json({ success: true, message: 'Booking deleted successfully.' });
     } catch (error) {
         next(error);
+    }
+};
+
+
+export const updatePaymentDetails = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bookingId } = req.params;
+        const { agentPaypalEmail, paymentInstruction } = req.body;
+
+        const booking = await Booking.findByIdAndUpdate(bookingId, {
+            agentPaypalEmail,
+            paymentInstruction,
+        }, { new: true });
+
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found.' });
+        }
+
+        // TODO: Send email notification to user with payment details
+
+        res.json({ success: true, message: 'Payment details updated' });
+    } catch (error) {
+        console.log(error);
+        next(error)
+    }
+};
+
+export const submitTransactionId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bookingId } = req.params;
+        const { userTransactionId } = req.body;
+
+        const booking = await Booking.findByIdAndUpdate(bookingId, {
+            userTransactionId,
+        }, { new: true });
+
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found.' });
+        }
+
+        // TODO: Send email notification to agent with transaction ID
+
+        res.json({ success: true, message: "Transaction id updated successfully" });
+    } catch (error) {
+        console.log(error);
+        next(error)
     }
 };
