@@ -47,10 +47,6 @@ export const addToFavorites = async (req: Request, res: Response, next: NextFunc
 };
 
 
-
-
-
-
 export const getFavorites = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId } = req.params;
