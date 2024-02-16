@@ -313,21 +313,30 @@ export const updatePaymentDetails = async (req: Request, res: Response, next: Ne
         const { bookingId } = req.params;
         const { agentPaypalEmail, paymentInstruction } = req.body;
 
-        const booking = await Booking.findByIdAndUpdate(bookingId, {
-            agentPaypalEmail,
-            paymentInstruction,
-        }, { new: true });
+        // Find the booking by ID
+        const booking = await Booking.findById(bookingId);
 
         if (!booking) {
             return res.status(404).json({ success: false, error: 'Booking not found.' });
         }
 
+        // Check if agentPaypalEmail or paymentInstruction already exist
+        if (booking.agentPaypalEmail || booking.paymentInstruction) {
+            return res.status(400).json({ success: false, error: 'Payment details already exist.' });
+        }
+
+        // Update the booking with new payment details
+        const updatedBooking = await Booking.findByIdAndUpdate(bookingId, {
+            agentPaypalEmail,
+            paymentInstruction,
+        }, { new: true });
+
         // TODO: Send email notification to user with payment details
 
-        res.json({ success: true, message: 'Payment details updated' });
+        res.json({ success: true, message: 'Payment details updated', booking: updatedBooking });
     } catch (error) {
         console.log(error);
-        next(error)
+        next(error);
     }
 };
 
@@ -336,19 +345,28 @@ export const submitTransactionId = async (req: Request, res: Response, next: Nex
         const { bookingId } = req.params;
         const { userTransactionId } = req.body;
 
-        const booking = await Booking.findByIdAndUpdate(bookingId, {
-            userTransactionId,
-        }, { new: true });
+        // Find the booking by ID
+        const booking = await Booking.findById(bookingId);
 
         if (!booking) {
             return res.status(404).json({ success: false, error: 'Booking not found.' });
         }
 
+        // Check if userTransactionId already exists
+        if (booking.userTransactionId) {
+            return res.status(400).json({ success: false, error: 'Transaction ID already exists.' });
+        }
+
+        // Update the booking with the new transaction ID
+        const updatedBooking = await Booking.findByIdAndUpdate(bookingId, {
+            userTransactionId,
+        }, { new: true });
+
         // TODO: Send email notification to agent with transaction ID
 
-        res.json({ success: true, message: "Transaction id updated successfully" });
+        res.json({ success: true, message: "Transaction ID updated successfully", booking: updatedBooking });
     } catch (error) {
         console.log(error);
-        next(error)
+        next(error);
     }
 };
