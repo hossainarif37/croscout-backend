@@ -10,6 +10,7 @@ const propertyRoutes = require('./routes/property.routes');
 const favoritesRoutes = require('./routes/favorite.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const transactionRoutes = require('./routes/transaction.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 
 // Load environment variables from .env file
 dotenvConfig();
@@ -67,6 +68,9 @@ app.use('/api/bookings', bookingRoutes);
 
 // Transaction Routes
 app.use('/api/transactions', transactionRoutes);
+
+// Dashboard Routes
+app.use('/api/dashboard', dashboardRoutes);
 
 //**---------------- API Routes End --------------------**//
 
