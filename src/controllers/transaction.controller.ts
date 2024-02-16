@@ -6,7 +6,7 @@ import User from '../models/user.model';
 export const getAllTransactions = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const transactions = await Transaction.find();
-        res.json(transactions);
+        res.json({ success: true, transactions });
     } catch (error) {
         console.log(error);
         next(error);
