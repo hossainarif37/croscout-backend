@@ -38,6 +38,8 @@ export const getTransactionsByRole = async (req: Request, res: Response, next: N
             } else {
                 res.status(404).json({ success: false, error: 'No transactions found.' });
             }
+        } else {
+            res.status(404).json({ success: false, error: 'No transactions found.' });
         }
 
     } catch (error) {
