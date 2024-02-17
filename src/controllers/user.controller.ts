@@ -10,6 +10,14 @@ interface ICommonProperties {
     name: string;
     taxNumber: string;
     role: string;
+    isCompletedProfile: boolean;
+    isAdmin: boolean;
+    telephoneOrPhone: string;
+    street: string;
+    houseOrBuildingNum: string;
+    postcode: string;
+    city: string;
+    state: string;
 }
 
 export const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -98,8 +106,19 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 
         const commonProperties: Partial<ICommonProperties> = {
             name: body?.name,
-            image: body?.image
+            image: body?.image,
+            isCompletedProfile: body?.isCompletedProfile,
+            telephoneOrPhone: body?.telephoneOrPhone,
+            street: body?.street,
+            houseOrBuildingNum: body?.houseOrBuildingNum,
+            postcode: body?.postcode,
+            city: body?.city,
+            state: body?.state,
         };
+
+        if (!body) {
+            return res.json({ success: false, error: "Please provide a valid data with body." })
+        }
 
         if (role === "agent") {
             commonProperties.role = "agent";
@@ -110,11 +129,15 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
             $set: commonProperties
         };
 
+
+
         const user = await User.findByIdAndUpdate(userId, updatedDoc, { new: true });
+
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
 
         return res.status(200).send({ success: true, message: "User Info Update" });
     } catch (error) {
