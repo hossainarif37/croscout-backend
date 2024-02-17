@@ -33,7 +33,8 @@ export const getDashboardStats = async (req: Request, res: Response, next: NextF
             ]);
 
             // Latest   4 Bookings
-            const latestBookings = await Booking.find().sort({ createdAt: -1 }).limit(4);
+            const latestBookings = await Booking.find().sort({ createdAt: -1 }).limit(4)
+                .populate('guest', 'name -_id').populate('owner', 'name -_id');
 
             stats = {
                 userCount,
@@ -56,7 +57,9 @@ export const getDashboardStats = async (req: Request, res: Response, next: NextF
 
 
             // Latest   4 Bookings of Agent
-            const latestAgentBookings = await Booking.find({ owner: userId }).sort({ createdAt: -1 }).limit(4);
+            const latestAgentBookings = await Booking.find({ owner: userId }).sort({ createdAt: -1 }).limit(4).populate('guest', 'name -_id');
+
+
 
 
             stats = {
