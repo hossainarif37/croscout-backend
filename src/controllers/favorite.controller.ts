@@ -20,7 +20,8 @@ export const addToFavorites = async (req: Request, res: Response, next: NextFunc
         }
 
         // Check if the propertyId is already in the user's favoriteList
-        if (user.favoriteList && user.favoriteList.includes(propertyId)) {
+        // if (user.favoriteList && user.favoriteList.includes(propertyId)) {
+        if (user.favoriteList && Array.isArray(user.favoriteList) && user.favoriteList.includes(propertyId)) {
 
             // Remove the property from the favorite list
             user.favoriteList = user.favoriteList!.filter(prop => prop.toString() !== propertyId);
