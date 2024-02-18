@@ -17,12 +17,12 @@ export const createProperty = async (req: Request, res: Response, next: NextFunc
 
 export const getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const filter: { location?: RegExp, guests?: { $gte: number }, propertyType?: RegExp } = {};
+        const filter: { state?: RegExp, guests?: { $gte: number }, propertyType?: RegExp } = {};
         const location = req.query.location;
         const guest = req.query.guest;
         const category = req.query.category;
         if (typeof location === "string") {
-            filter.location = new RegExp(location, 'i');
+            filter.state = new RegExp(location, 'i');
         }
         if (typeof guest === "string") {
             filter.guests = { $gte: parseInt(guest, 10) };
