@@ -55,7 +55,6 @@ app.get('/', (req, res) => {
 });
 
 //**---------------- API Routes Start --------------------**//
-
 // Define all the routes for the application
 import { checkSecureUser } from "./middleware/authentication"
 
