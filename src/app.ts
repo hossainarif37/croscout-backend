@@ -4,6 +4,9 @@ import passport from 'passport';
 import session from 'express-session';
 import { config as dotenvConfig } from 'dotenv';
 // const cookieParser = require('cookie-parser')
+
+
+// Define all the routes for the application
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const propertyRoutes = require('./routes/property.routes');
@@ -11,6 +14,8 @@ const favoritesRoutes = require('./routes/favorite.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const transactionRoutes = require('./routes/transaction.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+
+
 
 // Load environment variables from .env file
 dotenvConfig();
@@ -51,26 +56,29 @@ app.get('/', (req, res) => {
 
 //**---------------- API Routes Start --------------------**//
 
+// Define all the routes for the application
+import { checkSecureUser } from "./middleware/authentication"
+
 // Authentication Routes
 app.use('/api/auth', authRoutes);
-
-// User Routes
-app.use('/api/user', userRoutes);
 
 // Properties Routes
 app.use('/api/properties', propertyRoutes);
 
+// User Routes
+app.use('/api/user', checkSecureUser, userRoutes);
+
 // Favorites Routes
-app.use('/api/favorites', favoritesRoutes);
+app.use('/api/favorites', checkSecureUser, favoritesRoutes);
 
 // Booking Routes
-app.use('/api/bookings', bookingRoutes);
+app.use('/api/bookings', checkSecureUser, bookingRoutes);
 
 // Transaction Routes
-app.use('/api/transactions', transactionRoutes);
+app.use('/api/transactions', checkSecureUser, transactionRoutes);
 
 // Dashboard Routes
-app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/dashboard', checkSecureUser, dashboardRoutes);
 
 //**---------------- API Routes End --------------------**//
 

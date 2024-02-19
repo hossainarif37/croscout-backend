@@ -1,12 +1,13 @@
 const express = require('express');
 import { createProperty, getProperties, getSingleProperty, getPropertiesByUser, updateProperty, deleteProperty } from '../controllers/property.controller';
+import { checkSecureUser } from '../middleware/authentication';
 
 const router = express.Router();
 
 router
 
     // Create a Property
-    .post('/', createProperty)
+    .post('/', checkSecureUser, createProperty)
 
     // Get All Properties
     .get('/', getProperties)
@@ -15,12 +16,12 @@ router
     .get('/:id', getSingleProperty)
 
     // Get Properties by User
-    .get('/user/:email', getPropertiesByUser)
+    .get('/user/:email', checkSecureUser, getPropertiesByUser)
 
     // Update Property by ID
-    .put('/:id', updateProperty)
+    .put('/:id', checkSecureUser, updateProperty)
 
     // Delete Property by ID
-    .delete('/:id', deleteProperty)
+    .delete('/:id', checkSecureUser, deleteProperty)
 
 module.exports = router;

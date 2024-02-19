@@ -2,8 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-import { deleteUser, getAllUsers, getUsersByRole, updatePassword, updateUser } from "../controllers/user.controller";
-import { checkAuth } from "../middleware/authentication";
+import { deleteUser, getAllUsers, getCurrentUser, getUserDataById, getUsersByRole, updatePassword, updateUser } from "../controllers/user.controller";
 
 
 
@@ -21,9 +20,9 @@ router
      * @description Check if the user is authenticated before allowing access to certain routes.
      * @access Private
      */
-    .get('/current-user', checkAuth, userController.getCurrentUser)
+    .get('/current-user', getCurrentUser)
 
-    .get('/by-userid/:userId', userController.getUserDataById)
+    .get('/by-userid/:userId', getUserDataById)
 
     // Route for getting users by provided role
     .get('/users/by-role', getUsersByRole)
@@ -32,7 +31,7 @@ router
     .get('/all-users', getAllUsers)
 
     // Route for deleting a user (must be authenticated)
-    .delete('/:userId', checkAuth, deleteUser)
+    .delete('/:userId', deleteUser)
 
     // Route for updating a user (must be authenticated)
     .put('/:userId', updateUser)
