@@ -41,6 +41,8 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
                     role,
                     ...(role === 'agent' ? { taxNumber } : {}), // Conditionally add taxNumber if role is 'agent'
                 });
+
+                //* Create a new User
                 await newUser.save();
 
                 return res.status(201).json({
