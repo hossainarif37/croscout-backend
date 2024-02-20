@@ -3,5 +3,7 @@ import { UserDocument } from '../models/user.model';
 // import mongoose from 'mongoose';
 
 export interface RequestWithUser extends Request {
-    user: UserDocument
+    user: {
+        _id: string
+    }
 }
