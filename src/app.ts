@@ -8,6 +8,7 @@ import { config as dotenvConfig } from 'dotenv';
 
 // Define all the routes for the application
 const authRoutes = require('./routes/auth.routes');
+const emailVerificationRoutes = require('./routes/emailVerification.routes');
 const userRoutes = require('./routes/user.routes');
 const propertyRoutes = require('./routes/property.routes');
 const favoritesRoutes = require('./routes/favorite.routes');
@@ -60,6 +61,9 @@ import { checkSecureUser } from "./middleware/authentication"
 
 // Authentication Routes
 app.use('/api/auth', authRoutes);
+
+// Email Verification Routes
+app.use('/api/email-verification', emailVerificationRoutes);
 
 // Properties Routes
 app.use('/api/properties', propertyRoutes);
