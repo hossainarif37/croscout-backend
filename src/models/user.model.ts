@@ -8,6 +8,7 @@ export interface UserDocument extends Document {
     role: 'user' | 'agent' | 'admin';
     taxNumber: string;
     isCompletedProfile: boolean;
+    isEmailVerified: boolean;
     isAdmin: boolean;
     telephoneOrPhone?: string;
     street?: string;
@@ -19,6 +20,8 @@ export interface UserDocument extends Document {
     favoriteList?: mongoose.Types.ObjectId[]; // Array of ObjectId references
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
+    verifyEmailToken?: string;
+    verifyEmailExpires?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -32,6 +35,7 @@ const userSchema: Schema = new Schema({
     role: { type: String, enum: ['user', 'agent', 'admin'], required: true, default: 'user' },
     taxNumber: { type: String },
     isCompletedProfile: { type: Boolean, default: false },
+    isEmailVerified: { type: Boolean, default: false },
     isAdmin: { type: Boolean, default: false },
     telephoneOrPhone: { type: String },
     street: { type: String },
@@ -43,6 +47,8 @@ const userSchema: Schema = new Schema({
     favoriteList: [{ type: Schema.Types.ObjectId, ref: 'Property' }], // Array of ObjectId references to Property model
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    verifyEmailToken: { type: String },
+    verifyEmailExpires: { type: Date },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

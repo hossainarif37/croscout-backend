@@ -5,6 +5,7 @@ import Property, { IProperty } from '../models/property.model';
 import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
 import Transaction from '../models/transaction.model';
+import { transporter } from '../utility/mailer';
 
 // Define the Owner interface
 interface IOwner {
@@ -19,16 +20,6 @@ interface IGuest {
     name: string;
 }
 
-
-
-// Transporter of Nodemailer for Sending mail
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_ID
-    }
-});
 
 //* Create Booking for a Property
 export const createBooking = async (req: Request, res: Response, next: NextFunction) => {

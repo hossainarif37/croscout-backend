@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { transporter } from '../utility/mailer';
 
 
 dotenv.config();
@@ -136,15 +137,6 @@ export const logOutUser = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-
-// Create a Nodemailer transporter using Gmail service
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_ID
-    }
-});
 
 //* Forgot Password Controller
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
