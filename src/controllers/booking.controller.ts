@@ -122,7 +122,7 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
         const { action } = req.body;
 
         // Find the booking by ID
-        const booking = await Booking.findById(bookingId).populate('guest') as IBooking & { guest: IGuest };
+        const booking = await Booking.findById(bookingId).populate('guest').populate('owner') as IBooking & { guest: IGuest, owner: IOwner };
 
         // If the booking is not found, return an error response
         if (!booking) {
@@ -197,10 +197,10 @@ export const manageBookings = async (req: Request, res: Response, next: NextFunc
                     name: "Croscout",
                     address: gmailUser
                 },
-                to: booking.guest.email, // Assuming the guest has an email field
+                to: [booking.guest.email, booking.owner.email], // Assuming the guest has an email field
                 subject: `Booking Status Update: ${booking.status}`,
                 text: `Hello ${booking.guest.name}, your booking has been ${booking.status}.`,
-                html: `<b>Hello ${booking.guest.name},</b><br><p>Your booking has been ${booking.status}.</p>`
+                html: `<b>Hello there,</b><br><p>The booking has been ${booking.status}. Booking id: ${booking.id}</p>`
             };
 
             // Send the status update email
@@ -347,7 +347,7 @@ export const updatePaymentDetails = async (req: Request, res: Response, next: Ne
         const { agentPaypalEmail, paymentInstruction } = req.body;
 
         // Find the booking by ID
-        const booking = await Booking.findById(bookingId);
+        const booking = await Booking.findById(bookingId).populate('guest') as IBooking & { guest: IGuest };
 
         // If the booking is not found, send a response with a status of   404 and an error message
         if (!booking) {
@@ -366,6 +366,35 @@ export const updatePaymentDetails = async (req: Request, res: Response, next: Ne
         }, { new: true });
 
         // TODO: Send email notification to user with payment details
+        // Send email notification to user with payment details
+        // Ensure the Gmail user is set
+        const gmailUser = process.env.GMAIL_USER;
+        if (!gmailUser) {
+            throw new Error('GMAIL_USER is not set');
+        }
+
+        const mailOptions = {
+            from: {
+                name: "Croscout",
+                address: gmailUser // Assuming you have the Gmail user set in your environment variables
+            },
+            to: booking.guest.email, // Assuming the guest has an email field
+            subject: 'Requested to Booking Payment with Details',
+            text: `Dear ${booking.guest.name},\n\nWe are pleased to inform you that your booking payment details have been updated. Here are the new details for booking ID: ${bookingId}:\n\nAgent PayPal Email: ${agentPaypalEmail}\nPayment Instruction: ${paymentInstruction}\n\nPlease ensure you have completed the payment process as instructed. If you have any questions or need further assistance, feel free to contact us.\n\nThank you for choosing Croscout.\n\nBest regards,\nThe Croscout Team`,
+            html: `<p>Dear ${booking.guest.name},</p><br><p>We are pleased to inform you that your booking payment details have been updated. Here are the new details for booking ID: <strong>${bookingId}</strong>:</p>
+                   <p><strong>Agent PayPal Email:</strong> ${agentPaypalEmail}</p>
+                   <p><strong>Payment Instruction:</strong> ${paymentInstruction}</p>
+                   <p>Please ensure you have completed the payment process as instructed. If you have any questions or need further assistance, feel free to contact us.</p>
+                   <p>Thank you for choosing Croscout.</p>
+                   <p>Best regards,<br>The Croscout Team</p>`
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                return res.status(500).json({ success: false, error: 'Failed to send payment details email' });
+            }
+            console.log(`Email sent: ${info.response}`);
+        });
 
         // Send a response with a status of   200 and a JSON object containing a success flag, a message, and the updated booking
         res.json({ success: true, message: 'Payment details updated', booking: updatedBooking });
@@ -386,7 +415,7 @@ export const submitTransactionId = async (req: Request, res: Response, next: Nex
         const { userTransactionId } = req.body;
 
         // Find the booking by ID
-        const booking = await Booking.findById(bookingId);
+        const booking = await Booking.findById(bookingId).populate('owner') as IBooking & { owner: IOwner };
 
         // If the booking is not found, send a response with a status of   404 and an error message
         if (!booking) {
@@ -404,6 +433,31 @@ export const submitTransactionId = async (req: Request, res: Response, next: Nex
         }, { new: true });
 
         // TODO: Send email notification to agent with transaction ID
+        const gmailUser = process.env.GMAIL_USER;
+        if (!gmailUser) {
+            throw new Error('GMAIL_USER is not set');
+        }
+
+        const mailOptions = {
+            from: {
+                name: "Croscout",
+                address: gmailUser// Assuming you have the Gmail user set in your environment variables
+            },
+            to: booking.owner.email, // Assuming the owner has an email field
+            subject: 'Transaction ID Submitted',
+            text: `Hello ${booking.owner.name},\n\nThe transaction ID for booking ID: ${bookingId} has been submitted. Here is the transaction ID: ${userTransactionId}\n\nPlease verify the transaction and update the booking status accordingly.\n\nThank you for your attention to detail.`,
+            html: `<p>Hello ${booking.owner.name},</p><br><p>The transaction ID for booking ID: <strong>${bookingId}</strong> has been submitted. Here is the transaction ID: <strong>${userTransactionId}</strong>.</p>
+                   <p>Please verify the transaction and update the booking status accordingly.</p>
+                   <p>Thank you for your attention to detail.</p>`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                return res.status(500).json({ success: false, error: 'Failed to send transaction ID email' });
+            }
+            console.log(`Email sent: ${info.response}`);
+        });
 
         // Send a response with a status of   200 and a JSON object containing a success flag, a message, and the updated booking
         res.json({ success: true, message: "Transaction ID updated successfully", booking: updatedBooking });
