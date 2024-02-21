@@ -40,7 +40,7 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
         }
 
         // Find properties that match the filter criteria
-        const properties = await Property.find(filter);
+        const properties = await Property.find(filter).populate('feedbacks', 'rating -_id');
 
         // Respond with the found properties
         res.status(200).json({ success: true, properties });
