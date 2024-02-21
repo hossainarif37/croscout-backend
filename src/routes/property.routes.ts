@@ -1,4 +1,5 @@
 const express = require('express');
+import { createFeedback, getFeedbacksForProperty } from '../controllers/feedback.controller';
 import { createProperty, getProperties, getSingleProperty, getPropertiesByUser, updateProperty, deleteProperty } from '../controllers/property.controller';
 import { checkSecureUser } from '../middleware/authentication';
 
@@ -81,5 +82,9 @@ router
     * @throws {404} If the property not found
     */
     .delete('/:id', checkSecureUser, deleteProperty)
+
+    .post('/feedback', checkSecureUser, createFeedback)
+
+    .get('/:propertyId/feedbacks', getFeedbacksForProperty)
 
 module.exports = router;
