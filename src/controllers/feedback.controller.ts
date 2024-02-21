@@ -42,7 +42,7 @@ export const createFeedback = async (req: Request, res: Response, next: NextFunc
 export const getFeedbacksForProperty = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { propertyId } = req.params;
-        const feedbacks = await Feedback.find({ property: propertyId });
+        const feedbacks = await Feedback.find({ property: propertyId }).populate('user', 'name image -_id');
 
         if (feedbacks && feedbacks.length < 1) {
             return res.status(404).json({ success: false, error: 'Feedback not found' });
