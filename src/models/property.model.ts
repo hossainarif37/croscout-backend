@@ -12,7 +12,7 @@ export interface IProperty extends Document {
     bookedDates: { startDate: Date; endDate: Date }[];
     guests: number;
     propertyImages: string[];
-    ratings: number[];
+    feedbacks: mongoose.Types.ObjectId[];
 }
 
 const PropertySchema: Schema = new Schema({
@@ -30,7 +30,7 @@ const PropertySchema: Schema = new Schema({
     }],
     guests: { type: Number, required: true },
     propertyImages: [{ type: String, required: true }],
-    ratings: [{ type: Number }]
+    feedbacks: [{ type: mongoose.Types.ObjectId, ref: 'Feedback' }]
 });
 
 const Property = mongoose.model<IProperty>('Property', PropertySchema);
