@@ -104,7 +104,8 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
         const loggedInUserId = (req.user as UserDocument)._id;
 
         // Check if the userId from the request matches the logged-in user's ID
-        if (userId !== loggedInUserId.toString() || (req.user as UserDocument).role !== 'admin') {
+        if ((req.user as UserDocument).role !== 'admin') {
+            console.log(108);
             // If not, return an error response indicating that only the user can delete their own account
             return res.status(403).json({ success: false, error: 'You are not able to delete.' });
         }
