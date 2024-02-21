@@ -101,13 +101,13 @@ export const deleteUser = async (req: RequestWithUser, res: Response, next: Next
         const userId = req.params.userId;
 
         // Extract the logged-in user's ID from the request
-        const loggedInUserId = req.user._id;
+        // const loggedInUserId = req.user._id;
 
-        // Check if the userId from the request matches the logged-in user's ID
-        if (userId !== loggedInUserId.toString()) {
-            // If not, return an error response indicating that only the user can delete their own account
-            return res.status(403).json({ success: false, error: 'You can only delete your own account.' });
-        }
+        // // Check if the userId from the request matches the logged-in user's ID
+        // if (userId !== loggedInUserId.toString() ) {
+        //     // If not, return an error response indicating that only the user can delete their own account
+        //     return res.status(403).json({ success: false, error: 'You can only delete your own account.' });
+        // }
 
         // Attempt to find and delete the user by their ID
         const result = await User.findByIdAndDelete(userId).exec();
