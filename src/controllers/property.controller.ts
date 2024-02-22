@@ -43,18 +43,18 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
             filter.propertyType = new RegExp(category, 'i');
         }
 
-        const sort: { [key: string]: number } = {};
+        const sort: { [key: string]: string } = {};
 
         if (alphabate === "asc" || alphabate === "desc") {
-            sort.state = alphabate === "asc" ? 1 : -1;
+            sort.state = alphabate 
         }
 
         if (price === "asc" || price === "desc") {
-            sort.pricePerNight = price === "asc" ? 1 : -1;
+            sort.pricePerNight = price 
         }
 
         if (newest === "true") {
-            sort._id = -1;
+            sort._id = "desc";
         }
 
 
