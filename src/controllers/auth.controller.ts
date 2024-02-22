@@ -290,9 +290,9 @@ export const authGoogleCallback = (req: Request, res: Response, next: NextFuncti
             // Check some condition to decide where to redirect the user
             if (user.isAdmin) {
                 // Send a JSON response with a success message and a URL to redirect to the admin dashboard
-                return res.status(200).json({ success: true, message: 'Login successful' });
+                return res.redirect(`${process.env.CLIENT_URL}/dashboard`)
             } else {
-                return res.status(200).json({ success: true, message: 'Login successful' });
+                return res.redirect(`${process.env.CLIENT_URL}/dashboard/user/my-bookings`)
             }
         });
     })(req, res, next);
