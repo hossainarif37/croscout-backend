@@ -24,11 +24,33 @@ interface ICommonProperties {
 // This function retrieves the current authenticated user's information.
 export const getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Respond with the current user's information
-        res.status(200).json({
-            success: true,
-            user: req.user
-        });
+        // Passport.js attaches the user object to the request object after successful authentication
+        if (req.user) {
+            // Use the user ID from the session to find the user in the database
+            User.findById((req.user as UserDocument)._id)
+                .select('-password') // Exclude the password field
+                .then(user => {
+                    if (user) {
+                        // Send the user object as a response
+                        res.json(user);
+                    } else {
+                        // If the user is not found, send an appropriate response
+                        res.status(404).json({ message: 'User not found' });
+                    }
+                })
+                .catch(err => {
+                    // Handle any errors that occurred during the request
+                    next(err);
+                });
+        } else {
+            // This should not happen if the middleware is working correctly, but it's good to have a fallback
+            res.status(401).json({ message: 'Not authenticated' });
+        }
+        // // Respond with the current user's information
+        // res.status(200).json({
+        //     success: true,
+        //     user: req.user
+        // });
     } catch (error) {
         // Log the error and pass it to the next middleware for error handling
         console.log(error);
@@ -105,7 +127,6 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
         // Check if the userId from the request matches the logged-in user's ID
         if ((req.user as UserDocument).role !== 'admin') {
-            console.log(108);
             // If not, return an error response indicating that only the user can delete their own account
             return res.status(403).json({ success: false, error: 'You are not able to delete.' });
         }
