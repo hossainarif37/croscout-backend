@@ -32,10 +32,10 @@ export const getCurrentUser = async (req: Request, res: Response, next: NextFunc
                 .then(user => {
                     if (user) {
                         // Send the user object as a response
-                        res.json(user);
+                        res.json({ success: true, user });
                     } else {
                         // If the user is not found, send an appropriate response
-                        res.status(404).json({ message: 'User not found' });
+                        res.status(404).json({ success: false, error: 'User not found' });
                     }
                 })
                 .catch(err => {
@@ -44,7 +44,7 @@ export const getCurrentUser = async (req: Request, res: Response, next: NextFunc
                 });
         } else {
             // This should not happen if the middleware is working correctly, but it's good to have a fallback
-            res.status(401).json({ message: 'Not authenticated' });
+            res.status(401).json({ success: false, error: 'Not authenticated' });
         }
         // // Respond with the current user's information
         // res.status(200).json({
