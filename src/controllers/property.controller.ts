@@ -25,6 +25,10 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
         const location = req.query.location;
         const guest = req.query.guest;
         const category = req.query.category;
+        const price = req.query.price;
+        const alphabate = req.query.alphabate;
+        const newest = req.query.newest;
+
 
         // If location is provided, add a case-insensitive regex filter for the state
         if (typeof location === "string") {
@@ -39,8 +43,23 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
             filter.propertyType = new RegExp(category, 'i');
         }
 
+        const sort: { [key: string]: number } = {};
+
+        if (alphabate === "asc" || alphabate === "desc") {
+            sort.state = alphabate === "asc" ? 1 : -1;
+        }
+
+        if (price === "asc" || price === "desc") {
+            sort.pricePerNight = price === "asc" ? 1 : -1;
+        }
+
+        if (newest === "true") {
+            sort._id = -1;
+        }
+
+
         // Find properties that match the filter criteria
-        const properties = await Property.find(filter).populate('feedbacks', 'rating -_id');
+        const properties = await Property.find(filter).sort(sort as any).populate('feedbacks', 'rating -_id');
 
         // Respond with the found properties
         res.status(200).json({ success: true, properties });
