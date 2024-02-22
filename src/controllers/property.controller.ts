@@ -33,7 +33,7 @@ export const getProperties = async (req: Request, res: Response, next: NextFunct
         let limit = 20;
 
         if (reqlimit) {
-            limit += parseInt(reqlimit as string, 10);
+            limit = parseInt(reqlimit as string, 10);
         }
 
         // If location is provided, add a case-insensitive regex filter for the state
